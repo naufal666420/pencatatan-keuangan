@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinStudent v3.0 - Catatan Keuangan Mahasiswa</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            scroll-behavior: smooth;
+        }
+        body {
+            background: radial-gradient(circle at top left, #1e1b4b, #0f172a, #2e1065);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: #f8fafc;
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.45);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        .glass-input {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #ffffff;
+        }
+        .glass-input:focus {
+            background: rgba(15, 23, 42, 0.85);
+            border-color: #a855f7;
+            box-shadow: 0 0 12px rgba(168, 85, 247, 0.35);
+            outline: none;
+        }
+        .glass-input option {
+            background-color: #0f172a;
+            color: #fff;
+        }
+        .neon-glow-red {
+            box-shadow: 0 0 20px rgba(244, 63, 94, 0.2);
+            border: 1px solid rgba(244, 63, 94, 0.3);
+        }
+        .neon-glow-green {
+            box-shadow: 0 0 20px rgba(52, 211, 153, 0.2);
+            border: 1px solid rgba(52, 211, 153, 0.3);
+        }
+        .neon-glow-amber {
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.2);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        .modal-backdrop {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(8px);
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(168, 85, 247, 0.5);
+        }
+    </style>
+</head>
+<body class="flex min-h-screen overflow-x-hidden">
+
+    <!-- SIDEBAR NAVIGATION -->
+    <aside class="w-64 glass-card border-r border-slate-800/60 p-6 hidden md:flex flex-col justify-between shrink-0 m-4 rounded-3xl sticky top-4 h-[calc(100vh-2rem)]">
+        <div class="space-y-8">
+            <div class="flex items-center gap-3 px-2">
+                <div class="p-2.5 bg-purple-600/30 rounded-xl border border-purple-500/30 text-purple-400">
+                    <i class="fa-solid fa-wallet text-xl"></i>
+                </div>
+                <div>
+                    <h2 class="text-lg font-extrabold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">FinStudent</h2>
+                    <p class="text-[10px] text-slate-400">Masa Depan Finansialmu</p>
+                </div>
+            </div>
+
+            <nav class="space-y-2">
+                <a href="#dashboard" class="flex items-center gap-3 px-4 py-3 bg-purple-600/25 text-purple-300 font-semibold rounded-xl border border-purple-500/20 transition-all hover:translate-x-1">
+                    <i class="fa-solid fa-house text-sm"></i> <span class="text-xs">Home Dashboard</span>
+                </a>
+                <a href="#targets-section" class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/40 rounded-xl transition-all hover:translate-x-1">
+                    <i class="fa-solid fa-bullseye text-sm"></i> <span class="text-xs">Target Impian</span>
+                </a>
+                <a href="#analysis-section" class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/40 rounded-xl transition-all hover:translate-x-1">
+                    <i class="fa-solid fa-chart-pie text-sm"></i> <span class="text-xs">Analisis Bulanan</span>
+                </a>
+                <a href="#history-section" class="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/40 rounded-xl transition-all hover:translate-x-1">
+                    <i class="fa-solid fa-clock-rotate-left text-sm"></i> <span class="text-xs">Riwayat Catatan</span>
+                </a>
+            </nav>
+        </div>
+
+        <div class="space-y-4">
+            <div class="p-4 bg-slate-900/40 border border-slate-800/80 rounded-2xl text-center">
+                <p class="text-[10px] text-slate-400 font-semibold uppercase">Tips Keuangan</p>
+                <p class="text-xs font-semibold text-purple-300 mt-1">"Nabung sekarang, santai kemudian!"</p>
+            </div>
+            <p class="text-[10px] text-slate-500 text-center">FinStudent v3.0 • Tugas Proyek RPL</p>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main id="dashboard" class="flex-1 p-4 md:p-6 space-y-6 max-w-7xl mx-auto w-full">
+
+        <!-- HEADER & STUDENT PROFILE GAMIFICATION -->
+        <header class="grid grid-cols-1 lg:grid-cols-3 gap-4 items-center">
+            <div class="lg:col-span-1 flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-white">Dashboard Keuangan</h1>
+                    <p class="text-xs text-slate-400">Kelola uang sakumu dengan cerdas & interaktif!</p>
+                </div>
+            </div>
+
+            <!-- HEALTH MONITOR CARD -->
+            <div id="health-card" class="glass-card rounded-2xl p-4 flex items-center gap-3 transition-all duration-300">
+                <div id="health-icon-bg" class="p-2.5 rounded-xl bg-slate-800 text-slate-400">
+                    <i id="health-icon" class="fa-solid fa-heart-pulse text-lg"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-slate-400 font-semibold">Kesehatan Finansial:</span>
+                        <span id="health-status" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">Loading...</span>
+                    </div>
+                    <p id="health-message" class="text-[11px] text-slate-300 mt-0.5 truncate">Menghitung rasio keuangan...</p>
+                </div>
+            </div>
+
+            <!-- STUDENT PROFILE CARD (CLICKABLE TO EDIT) -->
+            <div onclick="openProfileModal()" class="glass-card rounded-2xl p-3.5 flex items-center justify-between gap-3 cursor-pointer hover:border-purple-500/40 transition-all group" title="Klik untuk edit profil">
+                <div class="flex items-center gap-3">
+                    <img id="user-avatar" src="https://api.dicebear.com/7.x/adventurer/svg?seed=Ahmad" alt="Avatar" class="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700">
+                    <div>
+                        <div class="flex items-center gap-1.5">
+                            <h4 id="user-name" class="text-sm font-bold text-white group-hover:text-purple-300">Ahmad Fauzi</h4>
+                            <i class="fa-solid fa-pen-to-square text-[10px] text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                        </div>
+                        <span id="user-tier" class="text-[10px] text-amber-400 font-semibold flex items-center gap-1">
+                            <i class="fa-solid fa-medal"></i> Tier: Hemat Ranger
+                        </span>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="text-[10px] text-slate-400 font-medium">Streak Hemat</div>
+                    <span id="user-streak" class="text-xs font-bold text-orange-400 flex items-center justify-end gap-1">
+                        <i class="fa-solid fa-fire animate-pulse"></i> 7 Hari
+                    </span>
+                </div>
+            </div>
+        </header>
+
+        <!-- FINANCIAL SUMMARY DASHBOARD CARDS -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- TOTAL SALDO -->
+            <div class="glass-card rounded-2xl p-5 relative overflow-hidden group hover:border-purple-500/40 transition-all duration-300">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Total Saldo</p>
+                        <h3 id="total-balance" class="text-2xl font-bold mt-1 text-white">Rp 0</h3>
+                        <p id="saldo-status-text" class="text-[10px] text-emerald-400 mt-1 flex items-center gap-1"><i class="fa-solid fa-check-circle"></i> Balance Seimbang</p>
+                    </div>
+                    <div class="p-2.5 bg-purple-500/25 rounded-xl text-purple-300 border border-purple-500/20">
+                        <i class="fa-solid fa-scale-balanced text-lg"></i>
+                    </div>
+                </div>
+                <div class="mt-4 h-1.5 w-full bg-slate-900 rounded-full overflow-hidden">
+                    <div id="saldo-progress" class="h-full bg-purple-500 rounded-full transition-all duration-500" style="width: 50%"></div>
+                </div>
+            </div>
+
+            <!-- TOTAL PEMASUKAN -->
+            <div class="glass-card rounded-2xl p-5 relative overflow-hidden group hover:border-emerald-500/40 transition-all duration-300">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Total Pemasukan</p>
+                        <h3 id="total-income" class="text-2xl font-bold mt-1 text-emerald-400">Rp 0</h3>
+                        <p class="text-[10px] text-emerald-500 mt-1 flex items-center gap-1"><i class="fa-solid fa-arrow-down-left"></i> Masuk bulan ini</p>
+                    </div>
+                    <div class="p-2.5 bg-emerald-500/25 rounded-xl text-emerald-400 border border-emerald-500/20">
+                        <i class="fa-solid fa-arrow-down-left text-lg"></i>
+                    </div>
+                </div>
+                <div class="mt-4 h-1.5 w-full bg-slate-900 rounded-full overflow-hidden">
+                    <div id="income-progress" class="h-full bg-emerald-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- TOTAL PENGELUARAN -->
+            <div class="glass-card rounded-2xl p-5 relative overflow-hidden group hover:border-rose-500/40 transition-all duration-300">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Total Pengeluaran</p>
+                        <h3 id="total-expense" class="text-2xl font-bold mt-1 text-rose-400">Rp 0</h3>
+                        <p class="text-[10px] text-rose-400 mt-1 flex items-center gap-1"><i class="fa-solid fa-arrow-up-right"></i> Keluar bulan ini</p>
+                    </div>
+                    <div class="p-2.5 bg-rose-500/25 rounded-xl text-rose-400 border border-rose-500/20">
+                        <i class="fa-solid fa-arrow-up-right text-lg"></i>
+                    </div>
+                </div>
+                <div class="mt-4 h-1.5 w-full bg-slate-900 rounded-full overflow-hidden">
+                    <div id="expense-progress" class="h-full bg-rose-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MAIN LAYOUT GRID -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <!-- LEFT COL: TRANSACTION FORM -->
+            <div class="space-y-6 lg:col-span-1">
+                <div class="glass-card rounded-3xl p-6 border border-slate-700/40">
+                    <h2 class="text-sm font-bold mb-4 flex items-center gap-2 text-white">
+                        <span class="p-2 bg-purple-500/25 rounded-xl text-purple-300 text-xs"><i class="fa-solid fa-plus-circle"></i></span>
+                        Tambah Transaksi
+                    </h2>
+                    
+                    <form id="transaction-form" class="space-y-4">
+                        <div>
+                            <label class="block text-xs text-slate-400 font-semibold mb-2">Jenis Transaksi</label>
+                            <div class="grid grid-cols-2 gap-1 p-1 bg-slate-900/60 border border-slate-800 rounded-xl">
+                                <button type="button" id="btn-expense" class="py-2 text-xs font-bold rounded-lg bg-purple-600 text-white shadow-md transition-all">Pengeluaran (-)</button>
+                                <button type="button" id="btn-income" class="py-2 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition-all">Pemasukan (+)</button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs text-slate-400 font-semibold mb-1">Kategori Mahasiswa</label>
+                            <select id="category" class="w-full glass-input rounded-xl px-4 py-2.5 text-xs font-medium" required>
+                                <option value="Kos & Listrik">🏠 Kos & Listrik</option>
+                                <option value="Uang Saku / Beasiswa">💰 Uang Saku / Beasiswa</option>
+                                <option value="Gaji / Freelance">💼 Gaji / Freelance</option>
+                                <option value="Makan & Minum">🍳 Makan & Minum</option>
+                                <option value="Kuliah & Print">🎓 Kuliah, Buku & Print</option>
+                                <option value="UKT / SPP">🏛️ UKT / SPP</option>
+                                <option value="Hiburan & Nongkrong">🥤 Hiburan & Nongkrong</option>
+                                <option value="Lain-lain">🌀 Lain-lain</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs text-slate-400 font-semibold mb-1">Nominal (Rp)</label>
+                            <input type="number" id="amount" placeholder="Contoh: 50000" min="1" class="w-full glass-input rounded-xl px-4 py-2.5 text-xs font-medium" required>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs text-slate-400 font-semibold mb-1">Keterangan Catatan</label>
+                            <input type="text" id="description" placeholder="Contoh: Bayar foto kopi modul" class="w-full glass-input rounded-xl px-4 py-2.5 text-xs font-medium" required>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs text-slate-400 font-semibold mb-1">Tanggal</label>
+                            <input type="date" id="date" class="w-full glass-input rounded-xl px-4 py-2.5 text-xs font-medium" required>
+                        </div>
+
+                        <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-bold rounded-xl text-xs transition-all shadow-lg shadow-purple-500/20 flex items-center justify-center gap-2 active:scale-95">
+                            <i class="fa-solid fa-paper-plane"></i> Simpan Transaksi
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- RIGHT COL: TARGETS, ANALYSIS & HISTORY -->
+            <div class="lg:col-span-2 space-y-6">
+
+                <!-- TARGETS & ANALYSIS ROW -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    <!-- TARGET IMPIAN & TABUNGAN (FULLY INTERACTIVE) -->
+                    <div id="targets-section" class="glass-card rounded-3xl p-5 border border-slate-700/40 flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wide flex items-center gap-2">
+                                    <i class="fa-solid fa-bullseye text-pink-500"></i> Target Impian & Tabungan
+                                </h3>
+                                <button onclick="openAddTargetModal()" class="text-[10px] bg-purple-600/30 text-purple-300 hover:bg-purple-600 hover:text-white px-2.5 py-1 rounded-lg border border-purple-500/30 transition-all font-semibold flex items-center gap-1">
+                                    <i class="fa-solid fa-plus"></i> Target
+                                </button>
+                            </div>
+                            <div id="targets-list" class="space-y-3 max-h-[190px] overflow-y-auto pr-1">
+                                <!-- Target items disisipkan via JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ANALISIS PENGELUARAN (DYNAMIC SVG DONUT CHART) -->
+                    <div id="analysis-section" class="glass-card rounded-3xl p-5 border border-slate-700/40 flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wide flex items-center gap-2 mb-3">
+                                <i class="fa-solid fa-chart-pie text-indigo-400"></i> Analisis Pengeluaran
+                            </h3>
+                            <div class="flex items-center gap-4">
+                                <div class="relative w-24 h-24 flex items-center justify-center shrink-0">
+                                    <svg id="donut-chart-svg" viewBox="0 0 36 36" class="w-full h-full transform -rotate-90">
+                                        <circle cx="18" cy="18" r="15.915" fill="none" stroke="#1e293b" stroke-width="3.5"></circle>
+                                    </svg>
+                                    <div class="absolute text-center">
+                                        <span class="text-[8px] font-bold text-slate-400 uppercase block">Total</span>
+                                        <div id="chart-center-text" class="text-[10px] font-extrabold text-white">0%</div>
+                                    </div>
+                                </div>
+
+                                <div id="chart-legend" class="flex-1 space-y-1.5 max-h-[110px] overflow-y-auto pr-1">
+                                    <!-- Legend disisipkan dinamis via JS -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- RIWAYAT KEUANGAN -->
+                <div id="history-section" class="glass-card rounded-3xl p-5 border border-slate-700/40">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-sm font-bold text-white">Riwayat Keuangan</h2>
+                            <span id="item-count" class="text-[10px] bg-purple-600/20 text-purple-300 border border-purple-500/30 px-2 py-0.5 rounded-full font-bold">0 Catatan</span>
+                        </div>
+                        <div class="flex items-center gap-2 w-full sm:w-auto">
+                            <input type="text" id="search" placeholder="Cari transaksi..." class="w-full sm:w-36 bg-slate-900/60 border border-slate-800 rounded-lg px-3 py-1.5 text-[11px] text-white focus:outline-none focus:border-purple-500">
+                            <select id="filter-category" class="bg-slate-900/60 border border-slate-800 rounded-lg px-2 py-1.5 text-[11px] text-slate-300 focus:outline-none">
+                                <option value="all">Semua</option>
+                                <option value="expense">Pengeluaran</option>
+                                <option value="income">Pemasukan</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="transaction-list" class="space-y-3 max-h-[320px] overflow-y-auto pr-1">
+                        <!-- Dynamic Transaction Items -->
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- MODAL 1: EDIT PROFIL MAHASISWA -->
+    <div id="profile-modal" class="fixed inset-0 modal-backdrop hidden z-50 flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-md rounded-3xl p-6 border border-slate-700/60 shadow-2xl">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-sm font-bold text-white flex items-center gap-2"><i class="fa-solid fa-user-gear text-purple-400"></i> Edit Profil Mahasiswa</h3>
+                <button onclick="closeProfileModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="profile-form" class="space-y-4">
+                <div>
+                    <label class="block text-xs text-slate-400 font-semibold mb-1">Nama Mahasiswa</label>
+                    <input type="text" id="edit-name" class="w-full glass-input rounded-xl px-4 py-2 text-xs" required>
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 font-semibold mb-1">Karakter Seed Avatar</label>
+                    <input type="text" id="edit-avatar" class="w-full glass-input rounded-xl px-4 py-2 text-xs" required>
+                    <p class="text-[10px] text-slate-500 mt-1">Ubah kata untuk mengganti bentuk avatar unikmu!</p>
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 font-semibold mb-1">Streak Hemat (Hari)</label>
+                    <input type="number" id="edit-streak" min="0" class="w-full glass-input rounded-xl px-4 py-2 text-xs" required>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeProfileModal()" class="px-4 py-2 rounded-xl text-xs bg-slate-800 text-slate-300">Batal</button>
+                    <button type="submit" class="px-4 py-2 rounded-xl text-xs bg-purple-600 hover:bg-purple-700 text-white font-bold">Simpan Profil</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: TAMBAH TARGET IMPIAN -->
+    <div id="target-modal" class="fixed inset-0 modal-backdrop hidden z-50 flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-md rounded-3xl p-6 border border-slate-700/60 shadow-2xl">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-sm font-bold text-white flex items-center gap-2"><i class="fa-solid fa-bullseye text-pink-400"></i> Tambah Target Impian</h3>
+                <button onclick="closeAddTargetModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="target-form" class="space-y-4">
+                <div>
+                    <label class="block text-xs text-slate-400 font-semibold mb-1">Nama Target</label>
+                    <input type="text" id="target-title" placeholder="Contoh: Beli Laptop Baru" class="w-full glass-input rounded-xl px-4 py-2 text-xs" required>
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 font-semibold mb-1">Emoji Icon</label>
+                    <input type="text" id="target-emoji" placeholder="💻" class="w-full glass-input rounded-xl px-4 py-2 text-xs" required>
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 font-semibold mb-1">Target Nominal (Rp)</label>
+                    <input type="number" id="target-goal" placeholder="5000000" min="1000" class="w-full glass-input rounded-xl px-4 py-2 text-xs" required>
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 font-semibold mb-1">Saldo Terkumpul Saat Ini (Rp)</label>
+                    <input type="number" id="target-current" placeholder="0" min="0" class="w-full glass-input rounded-xl px-4 py-2 text-xs" required>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeAddTargetModal()" class="px-4 py-2 rounded-xl text-xs bg-slate-800 text-slate-300">Batal</button>
+                    <button type="submit" class="px-4 py-2 rounded-xl text-xs bg-pink-600 hover:bg-pink-700 text-white font-bold">Simpan Target</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 3: DEPOSIT TABUNGAN -->
+    <div id="deposit-modal" class="fixed inset-0 modal-backdrop hidden z-50 flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-md rounded-3xl p-6 border border-slate-700/60 shadow-2xl">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-sm font-bold text-white flex items-center gap-2"><i class="fa-solid fa-piggy-bank text-emerald-400"></i> Setor Tabungan Target</h3>
+                <button onclick="closeDepositModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="deposit-form" class="space-y-4">
+                <input type="hidden" id="deposit-target-id">
+                <p id="deposit-target-name" class="text-xs text-purple-300 font-semibold">Target: Laptop Baru</p>
+                <div>
+                    <label class="block text-xs text-slate-400 font-semibold mb-1">Jumlah Setoran Tabungan (Rp)</label>
+                    <input type="number" id="deposit-amount" placeholder="100000" min="1" class="w-full glass-input rounded-xl px-4 py-2 text-xs" required>
+                </div>
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" id="record-as-expense" class="rounded bg-slate-900 border-slate-700 text-purple-600">
+                    <label for="record-as-expense" class="text-[11px] text-slate-300">Catat juga sebagai pengeluaran saldo utama</label>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeDepositModal()" class="px-4 py-2 rounded-xl text-xs bg-slate-800 text-slate-300">Batal</button>
+                    <button type="submit" class="px-4 py-2 rounded-xl text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold">Tambah Tabungan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // DATA STATE INITIALIZATION & LOCALSTORAGE
+        let transactions = JSON.parse(localStorage.getItem('fin_v3_transactions')) || [
+            { id: 1698500000000, type: 'expense', category: 'Kos & Listrik', amount: 1000000, description: 'Bayar Kost Dan Listrik', date: '2026-10-28' }
+        ];
+
+        let targets = JSON.parse(localStorage.getItem('fin_v3_targets')) || [
+            { id: 1, title: 'Beli Laptop Baru', emoji: '💻', goal: 5000000, current: 3000000 },
+            { id: 2, title: 'Bayar KKN', emoji: '🎓', goal: 1000000, current: 850000 }
+        ];
+
+        let profile = JSON.parse(localStorage.getItem('fin_v3_profile')) || {
+            name: 'Ahmad Fauzi',
+            avatar: 'Ahmad',
+            streak: 7
+        };
+
+        let activeType = 'expense';
+        const categoryColors = {
+            'Kos & Listrik': '#f43f5e',
+            'Uang Saku / Beasiswa': '#10b981',
+            'Gaji / Freelance': '#06b6d4',
+            'Makan & Minum': '#3b82f6',
+            'Kuliah & Print': '#a855f7',
+            'UKT / SPP': '#ec4899',
+            'Hiburan & Nongkrong': '#eab308',
+            'Lain-lain': '#64748b'
+        };
+
+        // DOM ELEMENTS
+        const btnExpense = document.getElementById('btn-expense');
+        const btnIncome = document.getElementById('btn-income');
+
+        btnExpense.addEventListener('click', () => {
+            activeType = 'expense';
+            btnExpense.className = "py-2 text-xs font-bold rounded-lg bg-purple-600 text-white shadow-md transition-all";
+            btnIncome.className = "py-2 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition-all";
+        });
+
+        btnIncome.addEventListener('click', () => {
+            activeType = 'income';
+            btnIncome.className = "py-2 text-xs font-bold rounded-lg bg-emerald-600 text-white shadow-md transition-all";
+            btnExpense.className = "py-2 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition-all";
+        });
+
+        document.getElementById('date').valueAsDate = new Date();
+
+        function saveAllData() {
+            localStorage.setItem('fin_v3_transactions', JSON.stringify(transactions));
+            localStorage.setItem('fin_v3_targets', JSON.stringify(targets));
+            localStorage.setItem('fin_v3_profile', JSON.stringify(profile));
+            renderUI();
+        }
+
+        function formatRupiah(num) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+        }
+
+        // PROFILE MODAL LOGIC
+        function openProfileModal() {
+            document.getElementById('edit-name').value = profile.name;
+            document.getElementById('edit-avatar').value = profile.avatar;
+            document.getElementById('edit-streak').value = profile.streak;
+            document.getElementById('profile-modal').classList.remove('hidden');
+        }
+        function closeProfileModal() {
+            document.getElementById('profile-modal').classList.add('hidden');
+        }
+        document.getElementById('profile-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            profile.name = document.getElementById('edit-name').value;
+            profile.avatar = document.getElementById('edit-avatar').value;
+            profile.streak = parseInt(document.getElementById('edit-streak').value) || 0;
+            closeProfileModal();
+            saveAllData();
+        });
+
+        // TARGET MODAL LOGIC
+        function openAddTargetModal() {
+            document.getElementById('target-modal').classList.remove('hidden');
+        }
+        function closeAddTargetModal() {
+            document.getElementById('target-modal').classList.add('hidden');
+        }
+        document.getElementById('target-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            targets.push({
+                id: Date.now(),
+                title: document.getElementById('target-title').value,
+                emoji: document.getElementById('target-emoji').value || '🎯',
+                goal: parseFloat(document.getElementById('target-goal').value),
+                current: parseFloat(document.getElementById('target-current').value) || 0
+            });
+            closeAddTargetModal();
+            saveAllData();
+        });
+
+        // DEPOSIT TABUNGAN LOGIC
+        function openDepositModal(id) {
+            const target = targets.find(t => t.id === id);
+            if(!target) return;
+            document.getElementById('deposit-target-id').value = id;
+            document.getElementById('deposit-target-name').textContent = `Target: ${target.emoji} ${target.title}`;
+            document.getElementById('deposit-modal').classList.remove('hidden');
+        }
+        function closeDepositModal() {
+            document.getElementById('deposit-modal').classList.add('hidden');
+        }
+        document.getElementById('deposit-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const id = parseInt(document.getElementById('deposit-target-id').value);
+            const amt = parseFloat(document.getElementById('deposit-amount').value);
+            const asExpense = document.getElementById('record-as-expense').checked;
+
+            const target = targets.find(t => t.id === id);
+            if(target) {
+                target.current += amt;
+                if(asExpense) {
+                    transactions.push({
+                        id: Date.now(),
+                        type: 'expense',
+                        category: 'Lain-lain',
+                        amount: amt,
+                        description: `Tabungan: ${target.title}`,
+                        date: new Date().toISOString().split('T')[0]
+                    });
+                }
+            }
+            closeDepositModal();
+            saveAllData();
+        });
+
+        function deleteTarget(id) {
+            targets = targets.filter(t => t.id !== id);
+            saveAllData();
+        }
+
+        window.deleteTransaction = function(id) {
+            transactions = transactions.filter(t => t.id !== id);
+            saveAllData();
+        };
+
+        // RENDER TARGETS LIST
+        function renderTargets() {
+            const container = document.getElementById('targets-list');
+            container.innerHTML = '';
+            if(targets.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-500 py-4 text-center">Belum ada target impian dibuat.</p>`;
+                return;
+            }
+            targets.forEach(t => {
+                const pct = Math.min(100, Math.round((t.current / t.goal) * 100));
+                const div = document.createElement('div');
+                div.className = "p-3 bg-slate-900/40 border border-slate-800/80 rounded-2xl relative overflow-hidden group";
+                div.innerHTML = `
+                    <div class="flex justify-between items-center mb-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-base">${t.emoji}</span>
+                            <span class="text-xs font-bold text-white">${t.title}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] font-semibold text-slate-400">${pct}% (${formatRupiah(t.current)})</span>
+                            <button onclick="openDepositModal(${t.id})" class="text-emerald-400 hover:text-emerald-300 p-1" title="Setor Tabungan"><i class="fa-solid fa-plus-circle text-xs"></i></button>
+                            <button onclick="deleteTarget(${t.id})" class="text-slate-500 hover:text-rose-400 p-1" title="Hapus Target"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                        </div>
+                    </div>
+                    <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden mt-1.5">
+                        <div class="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-500" style="width: ${pct}%"></div>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // DYNAMIC SVG DONUT CHART CALCULATION
+        function renderDonutChart(expenseTotal) {
+            const svg = document.getElementById('donut-chart-svg');
+            const legend = document.getElementById('chart-legend');
+            const centerText = document.getElementById('chart-center-text');
+            
+            svg.innerHTML = '<circle cx="18" cy="18" r="15.915" fill="none" stroke="#1e293b" stroke-width="3.5"></circle>';
+            legend.innerHTML = '';
+
+            const expenses = transactions.filter(t => t.type === 'expense');
+            if(expenses.length === 0 || expenseTotal === 0) {
+                centerText.textContent = "0%";
+                legend.innerHTML = `<p class="text-[10px] text-slate-500">Belum ada data pengeluaran.</p>`;
+                return;
+            }
+
+            // Agregasi per kategori
+            const catMap = {};
+            expenses.forEach(t => {
+                catMap[t.category] = (catMap[t.category] || 0) + t.amount;
+            });
+
+            let accumulatedPct = 0;
+            Object.keys(catMap).forEach(cat => {
+                const amt = catMap[cat];
+                const pct = (amt / expenseTotal) * 100;
+                const dashArray = `${pct} ${100 - pct}`;
+                const dashOffset = -accumulatedPct;
+                const color = categoryColors[cat] || '#a855f7';
+
+                // Insert circle path
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', '18');
+                circle.setAttribute('cy', '18');
+                circle.setAttribute('r', '15.915');
+                circle.setAttribute('fill', 'none');
+                circle.setAttribute('stroke', color);
+                circle.setAttribute('stroke-width', '3.5');
+                circle.setAttribute('stroke-dasharray', dashArray);
+                circle.setAttribute('stroke-dashoffset', dashOffset);
+                svg.appendChild(circle);
+
+                accumulatedPct += pct;
+
+                // Legend Item
+                const legDiv = document.createElement('div');
+                legDiv.className = "flex items-center gap-1.5 text-[10px]";
+                legDiv.innerHTML = `
+                    <span class="w-2 h-2 rounded-full shrink-0" style="background-color: ${color}"></span>
+                    <span class="text-slate-300 truncate">${cat} (${pct.toFixed(0)}%)</span>
+                `;
+                legend.appendChild(legDiv);
+            });
+
+            centerText.textContent = `${expenses.length} Catatan`;
+        }
+
+        // FINANCIAL HEALTH MONITOR
+        function updateHealth(income, expense) {
+            const healthCard = document.getElementById('health-card');
+            const healthStatus = document.getElementById('health-status');
+            const healthMessage = document.getElementById('health-message');
+            const healthIcon = document.getElementById('health-icon');
+
+            if (income === 0 && expense === 0) {
+                healthStatus.textContent = "Belum Ada Data";
+                healthStatus.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700";
+                healthMessage.textContent = "Tambahkan catatan transaksi pertamamu!";
+                healthCard.className = "glass-card rounded-2xl p-4 flex items-center gap-3";
+                return;
+            }
+
+            const ratio = income > 0 ? (expense / income) * 100 : 100;
+
+            if (ratio <= 60) {
+                healthStatus.textContent = `Sangat Sehat (${ratio.toFixed(0)}%)`;
+                healthStatus.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
+                healthMessage.textContent = "Bagus! Kamu bisa menyimpan sebagian uang sakumu.";
+                healthCard.className = "glass-card rounded-2xl p-4 flex items-center gap-3 neon-glow-green";
+                healthIcon.className = "fa-solid fa-heart-pulse text-lg text-emerald-400";
+            } else if (ratio <= 85) {
+                healthStatus.textContent = `Waspada (${ratio.toFixed(0)}%)`;
+                healthStatus.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30";
+                healthMessage.textContent = "Keuangan mepet, perbanyak kontrol jajan nongkrong!";
+                healthCard.className = "glass-card rounded-2xl p-4 flex items-center gap-3 neon-glow-amber";
+                healthIcon.className = "fa-solid fa-triangle-exclamation text-lg text-amber-400";
+            } else {
+                healthStatus.textContent = `Bahaya / Defisit (${ratio.toFixed(0)}%)`;
+                healthStatus.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30";
+                healthMessage.textContent = "Pengeluaran melebihi batas safe. Kurangi jajan!";
+                healthCard.className = "glass-card rounded-2xl p-4 flex items-center gap-3 neon-glow-red";
+                healthIcon.className = "fa-solid fa-circle-exclamation text-lg text-rose-400";
+            }
+        }
+
+        // RENDER MAIN UI
+        function renderUI() {
+            // Profil Update
+            document.getElementById('user-name').textContent = profile.name;
+            document.getElementById('user-avatar').src = `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(profile.avatar)}`;
+            document.getElementById('user-streak').innerHTML = `<i class="fa-solid fa-fire animate-pulse"></i> ${profile.streak} Hari`;
+
+            // Totals
+            const income = transactions.filter(t => t.type === 'income').reduce((acc, t) => acc + t.amount, 0);
+            const expense = transactions.filter(t => t.type === 'expense').reduce((acc, t) => acc + t.amount, 0);
+            const balance = income - expense;
+
+            const balanceEl = document.getElementById('total-balance');
+            const saldoStatusText = document.getElementById('saldo-status-text');
+
+            if(balance < 0) {
+                balanceEl.textContent = `-${formatRupiah(Math.abs(balance))}`;
+                balanceEl.className = "text-2xl font-bold mt-1 text-rose-400";
+                saldoStatusText.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Defisit Finansial`;
+                saldoStatusText.className = "text-[10px] text-rose-400 mt-1 flex items-center gap-1";
+                document.getElementById('user-tier').innerHTML = `<i class="fa-solid fa-shield"></i> Tier: Defisit Survivor`;
+            } else {
+                balanceEl.textContent = formatRupiah(balance);
+                balanceEl.className = "text-2xl font-bold mt-1 text-emerald-400";
+                saldoStatusText.innerHTML = `<i class="fa-solid fa-circle-check"></i> Saldo Seimbang`;
+                saldoStatusText.className = "text-[10px] text-emerald-400 mt-1 flex items-center gap-1";
+                document.getElementById('user-tier').innerHTML = `<i class="fa-solid fa-medal"></i> Tier: Hemat Ranger`;
+            }
+
+            document.getElementById('total-income').textContent = formatRupiah(income);
+            document.getElementById('total-expense').textContent = formatRupiah(expense);
+
+            const totalActivity = income + expense;
+            document.getElementById('income-progress').style.width = totalActivity > 0 ? `${(income/totalActivity)*100}%` : '0%';
+            document.getElementById('expense-progress').style.width = totalActivity > 0 ? `${(expense/totalActivity)*100}%` : '0%';
+
+            updateHealth(income, expense);
+            renderTargets();
+            renderDonutChart(expense);
+
+            // Render Transaction History List
+            const listEl = document.getElementById('transaction-list');
+            listEl.innerHTML = '';
+
+            const filterType = document.getElementById('filter-category').value;
+            const searchKeyword = document.getElementById('search').value.toLowerCase();
+
+            let filtered = transactions;
+            if(filterType !== 'all') filtered = filtered.filter(t => t.type === filterType);
+            if(searchKeyword) {
+                filtered = filtered.filter(t => t.description.toLowerCase().includes(searchKeyword) || t.category.toLowerCase().includes(searchKeyword));
+            }
+
+            document.getElementById('item-count').textContent = `${filtered.length} Catatan`;
+
+            if(filtered.length === 0) {
+                listEl.innerHTML = `<div class="text-center py-8 text-slate-500"><i class="fa-regular fa-folder-open text-2xl mb-1"></i><p class="text-xs">Tidak ada riwayat catatan.</p></div>`;
+                return;
+            }
+
+            const sorted = [...filtered].sort((a,b) => new Date(b.date) - new Date(a.date));
+
+            sorted.forEach(t => {
+                const isIncome = t.type === 'income';
+                const div = document.createElement('div');
+                div.className = `glass-card rounded-2xl p-3.5 flex items-center justify-between border-slate-800 hover:border-slate-700 transition-all ${isIncome ? 'border-l-4 border-l-emerald-500' : 'border-l-4 border-l-rose-500'}`;
+                
+                div.innerHTML = `
+                    <div class="flex items-center gap-3 min-w-0">
+                        <div class="p-2.5 rounded-xl text-sm ${isIncome ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'}">
+                            <i class="fa-solid ${isIncome ? 'fa-arrow-down-left' : 'fa-arrow-up-right'}"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <h4 class="font-bold text-xs text-white truncate capitalize">${t.description}</h4>
+                            <div class="flex items-center gap-2 mt-0.5">
+                                <span class="text-[9px] px-2 py-0.5 rounded bg-slate-900/80 border border-slate-800 text-slate-400 font-semibold">${t.category}</span>
+                                <span class="text-[9px] text-slate-500"><i class="fa-regular fa-calendar-days"></i> ${t.date}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 shrink-0">
+                        <span class="font-bold text-xs ${isIncome ? 'text-emerald-400' : 'text-rose-400'}">
+                            ${isIncome ? '+' : '-'} ${formatRupiah(t.amount)}
+                        </span>
+                        <button onclick="deleteTransaction(${t.id})" class="text-slate-500 hover:text-rose-400 p-1 rounded transition-colors"><i class="fa-regular fa-trash-can text-xs"></i></button>
+                    </div>
+                `;
+                listEl.appendChild(div);
+            });
+        }
+
+        // FORM SUBMIT HANDLER
+        document.getElementById('transaction-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            transactions.push({
+                id: Date.now(),
+                type: activeType,
+                category: document.getElementById('category').value,
+                amount: parseFloat(document.getElementById('amount').value),
+                description: document.getElementById('description').value,
+                date: document.getElementById('date').value
+            });
+            saveAllData();
+            document.getElementById('amount').value = '';
+            document.getElementById('description').value = '';
+        });
+
+        document.getElementById('search').addEventListener('input', renderUI);
+        document.getElementById('filter-category').addEventListener('change', renderUI);
+
+        // INITIAL RENDER
+        renderUI();
+    </script>
+</body>
+</html>

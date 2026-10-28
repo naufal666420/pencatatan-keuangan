@@ -1,0 +1,18 @@
+[
+    {
+        "id": 1793188236553,
+        "date": "2026-10-28",
+        "type": "income",
+        "category": "Kos & Listrik",
+        "description": "pemasukan",
+        "amount": 2000000.0
+    },
+    {
+        "id": 1793188268285,
+        "date": "2026-10-28",
+        "type": "expense",
+        "category": "Hiburan & Nongkrong",
+        "description": "pengeluaran",
+        "amount": 200000.0
+    }
+]
